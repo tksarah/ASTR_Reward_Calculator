@@ -16,6 +16,307 @@
     --border-color: #dee2e6;
 }
 
+/* ========================
+   ダークモード対応
+   ======================== */
+
+/* ダークモード変数 */
+[data-theme="dark"] {
+    --primary-color: #4dabf7;
+    --success-color: #51cf66;
+    --danger-color: #ff6b6b;
+    --info-color: #74c0fc;
+    --light-bg: #2d3748;
+    --border-color: #4a5568;
+    --bg-color: #1a202c;
+    --text-color: #e2e8f0;
+    --card-bg: #2d3748;
+    --table-bg: #1a202c;
+    --input-bg: #4a5568;
+    --input-border: #718096;
+}
+
+[data-theme="dark"] body {
+    background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+    color: var(--text-color);
+}
+
+[data-theme="dark"] .card {
+    background-color: var(--card-bg);
+    border-color: var(--border-color);
+    color: var(--text-color);
+}
+
+[data-theme="dark"] .card-header {
+    background-color: var(--card-bg);
+    border-color: var(--border-color);
+    color: var(--text-color);
+}
+
+[data-theme="dark"] .table {
+    color: var(--text-color);
+}
+
+[data-theme="dark"] .table-light {
+    background-color: var(--card-bg) !important;
+    border-color: var(--border-color);
+    color: var(--text-color);
+}
+
+[data-theme="dark"] .table-hover tbody tr:hover {
+    background-color: rgba(74, 85, 104, 0.3);
+}
+
+[data-theme="dark"] .form-control,
+[data-theme="dark"] .input-group-text {
+    background-color: var(--input-bg);
+    border-color: var(--input-border);
+    color: var(--text-color);
+}
+
+[data-theme="dark"] .form-control:focus {
+    background-color: var(--input-bg);
+    color: var(--text-color);
+}
+
+[data-theme="dark"] .text-muted {
+    color: #a0aec0 !important;
+}
+
+[data-theme="dark"] .btn-outline-secondary {
+    color: #cbd5e0;
+    border-color: #718096;
+}
+
+[data-theme="dark"] .btn-outline-secondary:hover {
+    background-color: #718096;
+    color: var(--text-color);
+}
+
+[data-theme="dark"] .page-link {
+    color: var(--primary-color);
+    background-color: var(--card-bg);
+    border-color: var(--border-color);
+}
+
+[data-theme="dark"] .page-link:hover {
+    color: var(--primary-color);
+    background-color: rgba(74, 85, 104, 0.3);
+    border-color: var(--primary-color);
+}
+
+[data-theme="dark"] .page-item.active .page-link {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+}
+
+[data-theme="dark"] .alert {
+    background-color: var(--card-bg);
+    border-color: var(--border-color);
+    color: var(--text-color);
+}
+
+[data-theme="dark"] .alert-success {
+    background-color: rgba(81, 207, 102, 0.1);
+    color: #51cf66;
+    border-color: rgba(81, 207, 102, 0.3);
+}
+
+[data-theme="dark"] .alert-danger {
+    background-color: rgba(255, 107, 107, 0.1);
+    color: #ff6b6b;
+    border-color: rgba(255, 107, 107, 0.3);
+}
+
+[data-theme="dark"] .alert-warning {
+    background-color: rgba(255, 193, 7, 0.1);
+    color: #ffc107;
+    border-color: rgba(255, 193, 7, 0.3);
+}
+
+[data-theme="dark"] .form-label {
+    color: var(--text-color);
+}
+
+[data-theme="dark"] .input-group-text {
+    background-color: var(--input-bg);
+    color: var(--text-color);
+    border-color: var(--input-border);
+}
+
+[data-theme="dark"] .card-header.bg-primary {
+    background-color: var(--primary-color) !important;
+    color: white !important;
+}
+
+[data-theme="dark"] .card-header.bg-success {
+    background-color: var(--success-color) !important;
+    color: white !important;
+}
+
+[data-theme="dark"] .card-header.bg-info {
+    background-color: var(--info-color) !important;
+    color: white !important;
+}
+
+[data-theme="dark"] .card-header.bg-warning {
+    background-color: #ffc107 !important;
+    color: #212529 !important;
+}
+
+[data-theme="dark"] .btn-outline-primary {
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+[data-theme="dark"] .btn-outline-primary:hover {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+}
+
+[data-theme="dark"] .btn-outline-success {
+    color: var(--success-color);
+    border-color: var(--success-color);
+}
+
+[data-theme="dark"] .btn-outline-success:hover {
+    background-color: var(--success-color);
+    border-color: var(--success-color);
+    color: white;
+}
+
+[data-theme="dark"] .btn-outline-danger {
+    color: var(--danger-color);
+    border-color: var(--danger-color);
+}
+
+[data-theme="dark"] .btn-outline-danger:hover {
+    background-color: var(--danger-color);
+    border-color: var(--danger-color);
+    color: white;
+}
+
+[data-theme="dark"] .btn-outline-warning {
+    color: #ffc107;
+    border-color: #ffc107;
+}
+
+[data-theme="dark"] .btn-outline-warning:hover {
+    background-color: #ffc107;
+    border-color: #ffc107;
+    color: #212529;
+}
+
+[data-theme="dark"] .btn-outline-info {
+    color: var(--info-color);
+    border-color: var(--info-color);
+}
+
+[data-theme="dark"] .table thead th {
+    color: var(--text-color) !important;
+    background-color: var(--card-bg) !important;
+}
+
+[data-theme="dark"] .table-hover tbody tr:hover {
+    background-color: rgba(74, 85, 104, 0.3);
+}
+
+[data-theme="dark"] .sort-icon {
+    color: var(--text-color);
+}
+
+[data-theme="dark"] .badge {
+    color: white;
+}
+
+[data-theme="dark"] .text-primary {
+    color: var(--primary-color) !important;
+}
+
+[data-theme="dark"] .text-success {
+    color: var(--success-color) !important;
+}
+
+[data-theme="dark"] .text-info {
+    color: var(--info-color) !important;
+}
+
+[data-theme="dark"] .text-warning {
+    color: #ffc107 !important;
+}
+
+[data-theme="dark"] header {
+    background: var(--card-bg);
+    color: var(--text-color);
+    border-color: var(--border-color);
+}
+
+[data-theme="dark"] header h1 {
+    color: var(--primary-color);
+}
+
+[data-theme="dark"] footer {
+    background: var(--card-bg);
+    color: var(--text-color);
+    border-color: var(--border-color);
+}
+
+[data-theme="dark"] .dropdown-menu {
+    background-color: var(--card-bg);
+    border-color: var(--border-color);
+}
+
+[data-theme="dark"] .dropdown-item {
+    color: var(--text-color);
+}
+
+[data-theme="dark"] .dropdown-item:hover {
+    background-color: rgba(74, 85, 104, 0.3);
+    color: var(--text-color);
+}
+
+[data-theme="dark"] .modal-content {
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    border-color: var(--border-color);
+}
+
+[data-theme="dark"] .modal-header {
+    border-color: var(--border-color);
+}
+
+[data-theme="dark"] .modal-footer {
+    border-color: var(--border-color);
+}
+
+[data-theme="dark"] .tooltip-inner {
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+}
+
+[data-theme="dark"] .tooltip .tooltip-arrow::before {
+    border-color: var(--border-color);
+}
+
+/* テーマ切り替えボタン */
+.theme-toggle {
+    margin-bottom: 1rem;
+}
+
+#themeToggle {
+    font-size: 0.9rem;
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+}
+
+#themeToggle:hover {
+    transform: scale(1.05);
+}
+
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -171,6 +472,67 @@ header p {
 }
 
 /* ========================
+   ページング
+   ======================== */
+
+.pagination {
+    margin-bottom: 0;
+}
+
+.page-link {
+    color: var(--primary-color);
+    border-color: var(--border-color);
+    padding: 0.5rem 0.75rem;
+    font-weight: 500;
+}
+
+.page-link:hover {
+    color: var(--primary-color);
+    background-color: rgba(13, 110, 253, 0.1);
+    border-color: var(--primary-color);
+}
+
+.page-item.active .page-link {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+}
+
+.page-item.disabled .page-link {
+    color: #6c757d;
+    background-color: #f8f9fa;
+    border-color: var(--border-color);
+}
+
+/* 投資番号のスタイル */
+#dataTable tbody td:first-child {
+    font-weight: 700;
+    color: var(--primary-color);
+    width: 60px;
+    text-align: center;
+}
+
+/* ========================
+   ソート機能
+   ======================== */
+
+.sortable {
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+}
+
+.sortable:hover {
+    background-color: rgba(13, 110, 253, 0.1);
+}
+
+.sort-icon {
+    font-size: 0.8em;
+    color: var(--primary-color);
+    margin-left: 5px;
+}
+
+/* ========================
    集計サマリー
    ======================== */
 
@@ -205,7 +567,8 @@ header p {
 .table thead th {
     border-bottom: 2px solid var(--border-color);
     font-weight: 600;
-    color: #333;
+    color: #1a1a1a !important; /* より濃い黒に変更 - 強制適用 */
+    background-color: var(--light-bg) !important;
 }
 
 .table td {
@@ -348,10 +711,18 @@ footer {
     color: #666;
     font-size: 0.95rem;
     margin-top: 3rem;
+    padding: 1.25rem 1rem 1.5rem;
+    background: rgba(255, 255, 255, 0.72);
+    border-radius: 12px;
+    backdrop-filter: blur(6px);
 }
 
 footer p {
     margin-bottom: 0;
+}
+
+footer p + p {
+    margin-top: 0.4rem;
 }
 
 /* ========================
@@ -382,4 +753,30 @@ footer p {
 .alert-info {
     background-color: #cfe2ff;
     color: #084298;
+}
+
+/* ========================
+   グラフスタイル
+   ======================== */
+
+#monthlyChart {
+    max-height: 300px;
+    width: 100% !important;
+    /* 軸ラベルの視認性を確保 */
+    background-color: transparent !important;
+    /* 軸ラベルが確実に表示されるよう、追加のスタイル */
+    position: relative;
+    z-index: 1;
+}
+
+/* ダークモードでのグラフ調整 */
+[data-theme="dark"] #monthlyChart {
+    /* 軸ラベルが見えやすくなるよう、コントラストを少し上げる */
+    filter: contrast(1.05);
+}
+
+/* ライトモードでの軸ラベル確保 */
+[data-theme="light"] #monthlyChart,
+:root:not([data-theme="dark"]) #monthlyChart {
+    /* 必要に応じて追加のスタイル */
 }

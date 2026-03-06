@@ -8,6 +8,15 @@ class ASTRRewardCalculator {
         this.data = [];
         this.editingId = null;
         this.storageKey = 'astr_reward_data';
+        // ページング関連
+        this.currentPage = 1;
+        this.itemsPerPage = 5;
+        // ソート関連
+        this.sortColumn = 'date';
+        this.sortOrder = 'desc'; // 'asc' or 'desc'        // テーマ関連
+        this.themeKey = 'astr_theme';
+        // チャート関連
+        this.monthlyChart = null;
         this.init();
     }
 
@@ -24,6 +33,12 @@ class ASTRRewardCalculator {
 
         // イベントリスナーの設定
         this.setupEventListeners();
+
+        // ソートアイコンを初期化
+        this.updateSortIcons();
+
+        // テーマを初期化
+        this.initTheme();
 
         // 初期表示
         this.render();
@@ -43,6 +58,7 @@ class ASTRRewardCalculator {
         // エクスポート
         document.getElementById('exportCsvBtn').addEventListener('click', () => this.exportToCSV());
         document.getElementById('exportJsonBtn').addEventListener('click', () => this.exportToJSON());
+        document.getElementById('clearAllBtn').addEventListener('click', () => this.clearAllData());
 
         // インポート
         document.getElementById('importJsonBtn').addEventListener('click', () => {
@@ -50,8 +66,16 @@ class ASTRRewardCalculator {
         });
         document.getElementById('fileInput').addEventListener('change', (e) => this.handleImport(e));
 
-        // データ削除
-        document.getElementById('clearAllBtn').addEventListener('click', () => this.clearAllData());
+        // ソート機能
+        document.querySelectorAll('.sortable').forEach(header => {
+            header.addEventListener('click', (e) => {
+                const column = e.currentTarget.dataset.column;
+                this.handleSort(column);
+            });
+        });
+
+        // テーマ切り替え
+        document.getElementById('themeToggle').addEventListener('click', () => this.toggleTheme());
     }
 
     // ========================
@@ -131,6 +155,8 @@ class ASTRRewardCalculator {
         };
 
         this.data.push(entry);
+        // 新規追加時は最初のページに戻る
+        this.currentPage = 1;
         this.showAlert(`✅ リワード情報を追加しました。`, 'success');
     }
 
@@ -151,6 +177,13 @@ class ASTRRewardCalculator {
         if (index !== -1) {
             this.data.splice(index, 1);
             this.saveToStorage();
+
+            // 現在のページが空になった場合、前のページに戻る
+            const totalPages = Math.ceil(this.data.length / this.itemsPerPage);
+            if (this.currentPage > totalPages && totalPages > 0) {
+                this.currentPage = totalPages;
+            }
+
             this.render();
             this.showAlert(`🗑️ リワード情報を削除しました。`, 'info');
         }
@@ -227,6 +260,36 @@ class ASTRRewardCalculator {
         };
     }
 
+    calculateMonthlyTotals() {
+        const monthlyData = {};
+
+        this.data.forEach(entry => {
+            const date = new Date(entry.date);
+            const yearMonth = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+
+            if (!monthlyData[yearMonth]) {
+                monthlyData[yearMonth] = {
+                    totalRewardJPY: 0,
+                    totalFeeJPY: 0,
+                    netProfitJPY: 0,
+                };
+            }
+
+            const calc = this.calculateEntry(entry);
+            monthlyData[yearMonth].totalRewardJPY += calc.rewardJPY;
+            monthlyData[yearMonth].totalFeeJPY += calc.feeJPY;
+            monthlyData[yearMonth].netProfitJPY = monthlyData[yearMonth].totalRewardJPY - monthlyData[yearMonth].totalFeeJPY;
+        });
+
+        // 年月でソート
+        const sortedMonths = Object.keys(monthlyData).sort();
+
+        return sortedMonths.map(month => ({
+            month,
+            ...monthlyData[month],
+        }));
+    }
+
     // ========================
     // レンダリング
     // ========================
@@ -234,6 +297,7 @@ class ASTRRewardCalculator {
     render() {
         this.renderSummary();
         this.renderTable();
+        this.renderChart();
     }
 
     renderSummary() {
@@ -248,24 +312,164 @@ class ASTRRewardCalculator {
         document.getElementById('netProfitJpy').textContent = '¥' + this.formatCurrency(totals.netProfitJPY, 0);
     }
 
+    renderChart() {
+        const monthlyData = this.calculateMonthlyTotals();
+        const ctx = document.getElementById('monthlyChart');
+        const currentTheme = this.getTheme();
+
+        // 既存のチャートを完全に破棄
+        if (this.monthlyChart) {
+            this.monthlyChart.destroy();
+            this.monthlyChart = null;
+        }
+
+        // キャンバスをクリア
+        const canvasContext = ctx.getContext('2d');
+        canvasContext.clearRect(0, 0, ctx.width, ctx.height);
+
+        if (monthlyData.length === 0) {
+            ctx.style.display = 'none';
+            return;
+        } else {
+            ctx.style.display = 'block';
+        }
+
+        const labels = monthlyData.map(item => {
+            const [year, month] = item.month.split('-');
+            return `${year}年${month}月`;
+        });
+
+        const data = monthlyData.map(item => item.totalRewardJPY);
+
+        // テーマに応じた色設定
+        const isDark = currentTheme === 'dark';
+        const barColor = isDark ? 'rgba(25, 135, 84, 0.8)' : 'rgba(40, 167, 69, 0.8)';
+        const borderColor = isDark ? 'rgba(25, 135, 84, 1)' : 'rgba(40, 167, 69, 1)';
+        const gridColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+        const textColor = isDark ? '#ffffff' : '#1a1a1a'; // より濃い黒に変更
+
+        this.monthlyChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: '合計リワード額 (JPY)',
+                    data: data,
+                    backgroundColor: barColor,
+                    borderColor: borderColor,
+                    borderWidth: 1,
+                    borderRadius: 4,
+                    borderSkipped: false,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: {
+                    duration: 0 // 初期描画時のちらつきを防ぐ
+                },
+                plugins: {
+                    legend: {
+                        display: false,
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return '¥' + context.parsed.y.toLocaleString();
+                            }
+                        }
+                    }
+                },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: {
+                    duration: 0 // 初期描画時のちらつきを防ぐ
+                },
+                plugins: {
+                    legend: {
+                        display: false,
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return '¥' + context.parsed.y.toLocaleString();
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return '¥' + value.toLocaleString();
+                            },
+                            color: textColor,
+                            font: {
+                                size: 12,
+                                weight: '600',
+                                color: textColor // より確実に色を設定
+                            },
+                            padding: 10 // 軸ラベルとチャートの間に余白を追加
+                        },
+                        grid: {
+                            color: gridColor,
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            color: textColor,
+                            font: {
+                                size: 12,
+                                weight: '600',
+                                color: textColor // より確実に色を設定
+                            },
+                            padding: 5 // 軸ラベルとチャートの間に余白を追加
+                        },
+                        grid: {
+                            color: gridColor,
+                        }
+                    }
+                }
+            }
+            }
+        });
+    }
+
     renderTable() {
         const tbody = document.getElementById('tableBody');
+        const paginationControls = document.getElementById('paginationControls');
 
         if (this.data.length === 0) {
             tbody.innerHTML = `
                 <tr>
-                    <td colspan="5" class="text-center text-muted py-4">
+                    <td colspan="6" class="text-center text-muted py-4">
                         データがありません。リワード情報を追加してください。
                     </td>
                 </tr>
             `;
+            paginationControls.classList.add('d-none');
             return;
         }
 
         // 日付でソート（新しい順）
-        const sorted = [...this.data].sort((a, b) => new Date(b.date) - new Date(a.date));
+        const sorted = this.sortData(this.data);
 
-        tbody.innerHTML = sorted.map(entry => {
+        // ページング計算
+        const totalPages = Math.ceil(sorted.length / this.itemsPerPage);
+        const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+        const endIndex = startIndex + this.itemsPerPage;
+        const pageData = sorted.slice(startIndex, endIndex);
+
+        // ページが範囲外の場合、最初のページに戻す
+        if (this.currentPage > totalPages) {
+            this.currentPage = 1;
+            return this.renderTable();
+        }
+
+        // テーブル本体をレンダリング
+        tbody.innerHTML = pageData.map((entry, index) => {
             const calc = this.calculateEntry(entry);
             const dateObj = new Date(entry.date);
             const formattedDate = dateObj.toLocaleDateString('ja-JP', {
@@ -273,11 +477,13 @@ class ASTRRewardCalculator {
                 month: '2-digit',
                 day: '2-digit',
             });
+            const entryNumber = startIndex + index + 1;
 
             return `
                 <tr>
+                    <td><strong>${entryNumber}</strong></td>
                     <td><strong>${formattedDate}</strong></td>
-                    <td class="text-end">${this.formatNumber(entry.astrAmount, 4)}</td>
+                    <td class="text-end">${this.formatNumber(entry.astrAmount, 2)}</td>
                     <td class="text-end">$${this.formatCurrency(calc.rewardUSD)}</td>
                     <td class="text-end">¥${this.formatCurrency(calc.rewardJPY, 0)}</td>
                     <td class="text-center">
@@ -291,6 +497,126 @@ class ASTRRewardCalculator {
                 </tr>
             `;
         }).join('');
+
+        // ページングコントロールをレンダリング
+        this.renderPagination(totalPages);
+    }
+
+    renderPagination(totalPages) {
+        const paginationControls = document.getElementById('paginationControls');
+        const paginationList = document.getElementById('paginationList');
+
+        if (totalPages <= 1) {
+            paginationControls.classList.add('d-none');
+            return;
+        }
+
+        paginationControls.classList.remove('d-none');
+
+        let paginationHtml = '';
+
+        // 前へボタン
+        if (this.currentPage > 1) {
+            paginationHtml += `<li class="page-item"><a class="page-link" href="javascript:void(0)" onclick="app.changePage(${this.currentPage - 1})">« 前へ</a></li>`;
+        } else {
+            paginationHtml += `<li class="page-item disabled"><span class="page-link">« 前へ</span></li>`;
+        }
+
+        // ページ番号ボタン（最大5ページ表示）
+        const startPage = Math.max(1, this.currentPage - 2);
+        const endPage = Math.min(totalPages, startPage + 4);
+
+        for (let i = startPage; i <= endPage; i++) {
+            if (i === this.currentPage) {
+                paginationHtml += `<li class="page-item active"><span class="page-link">${i}</span></li>`;
+            } else {
+                paginationHtml += `<li class="page-item"><a class="page-link" href="javascript:void(0)" onclick="app.changePage(${i})">${i}</a></li>`;
+            }
+        }
+
+        // 次へボタン
+        if (this.currentPage < totalPages) {
+            paginationHtml += `<li class="page-item"><a class="page-link" href="javascript:void(0)" onclick="app.changePage(${this.currentPage + 1})">次へ »</a></li>`;
+        } else {
+            paginationHtml += `<li class="page-item disabled"><span class="page-link">次へ »</span></li>`;
+        }
+
+        paginationList.innerHTML = paginationHtml;
+    }
+
+    changePage(pageNumber) {
+        this.currentPage = pageNumber;
+        this.renderTable();
+    }
+
+    // ========================
+    // ソート機能
+    // ========================
+
+    handleSort(column) {
+        if (this.sortColumn === column) {
+            // 同じ列をクリックしたら順序を反転
+            this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc';
+        } else {
+            // 異なる列をクリックしたらその列で降順から開始
+            this.sortColumn = column;
+            this.sortOrder = 'desc';
+        }
+
+        // ソートアイコンを更新
+        this.updateSortIcons();
+
+        // 最初のページに戻って再レンダリング
+        this.currentPage = 1;
+        this.renderTable();
+    }
+
+    updateSortIcons() {
+        // すべてのソートアイコンをリセット
+        document.querySelectorAll('.sort-icon').forEach(icon => {
+            icon.textContent = '';
+        });
+
+        // 現在のソート列のアイコンを設定
+        const currentIcon = document.getElementById(`sort-${this.sortColumn}`);
+        if (currentIcon) {
+            currentIcon.textContent = this.sortOrder === 'asc' ? '▲' : '▼';
+        }
+    }
+
+    sortData(data) {
+        return [...data].sort((a, b) => {
+            let valueA, valueB;
+
+            switch (this.sortColumn) {
+                case 'date':
+                    valueA = new Date(a.date);
+                    valueB = new Date(b.date);
+                    break;
+                case 'astrAmount':
+                    valueA = a.astrAmount;
+                    valueB = b.astrAmount;
+                    break;
+                case 'rewardUSD':
+                    valueA = this.calculateEntry(a).rewardUSD;
+                    valueB = this.calculateEntry(b).rewardUSD;
+                    break;
+                case 'rewardJPY':
+                    valueA = this.calculateEntry(a).rewardJPY;
+                    valueB = this.calculateEntry(b).rewardJPY;
+                    break;
+                default:
+                    return 0;
+            }
+
+            if (valueA < valueB) {
+                return this.sortOrder === 'asc' ? -1 : 1;
+            }
+            if (valueA > valueB) {
+                return this.sortOrder === 'asc' ? 1 : -1;
+            }
+            return 0;
+        });
     }
 
     // ========================
@@ -404,8 +730,55 @@ class ASTRRewardCalculator {
     }
 
     // ========================
-    // インポート機能
+    // テーマ機能
     // ========================
+
+    initTheme() {
+        const savedTheme = this.getTheme();
+        this.setTheme(savedTheme);
+    }
+
+    toggleTheme() {
+        const currentTheme = this.getTheme();
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        this.setTheme(newTheme);
+        this.saveTheme(newTheme);
+    }
+
+    setTheme(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        const button = document.getElementById('themeToggle');
+        if (theme === 'dark') {
+            button.innerHTML = '☀️ ライト';
+            button.className = 'btn btn-light btn-sm';
+        } else {
+            button.innerHTML = '🌙 ダーク';
+            button.className = 'btn btn-outline-secondary btn-sm';
+        }
+        // テーマ変更時にグラフを完全に再作成
+        this.forceUpdateChart();
+    }
+
+    getTheme() {
+        return localStorage.getItem(this.themeKey) || 'light';
+    }
+
+    saveTheme(theme) {
+        localStorage.setItem(this.themeKey, theme);
+    }
+
+    forceUpdateChart() {
+        // 既存のチャートを完全に破棄
+        if (this.monthlyChart) {
+            this.monthlyChart.destroy();
+            this.monthlyChart = null;
+        }
+
+        // DOM更新を待ってから再作成
+        setTimeout(() => {
+            this.renderChart();
+        }, 50); // 50ms遅延でDOM更新を待つ
+    }
 
     handleImport(event) {
         const file = event.target.files[0];
