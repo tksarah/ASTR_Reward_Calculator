@@ -27,7 +27,7 @@
                     <p class="text-center text-muted">Astar dApp Staking リワード計算ツール</p>
                 </div>
                 <div class="d-flex align-items-center gap-2 flex-wrap justify-content-end">
-                    <button id="helpGuideBtn" class="btn btn-outline-primary btn-sm" title="使い方を別ウインドウで開く">
+                    <button id="helpGuideBtn" class="btn btn-outline-primary btn-sm" type="button" title="使い方を開く" data-bs-toggle="offcanvas" data-bs-target="#helpGuideDrawer" aria-controls="helpGuideDrawer">
                         ❓ 使い方 / ヘルプ
                     </button>
                     <button id="themeToggle" class="btn btn-outline-secondary btn-sm" title="テーマ切り替え">
@@ -49,7 +49,10 @@
                         <form id="entryForm">
                             <!-- 日付 -->
                             <div class="mb-3">
-                                <label for="date" class="form-label">📅 日付</label>
+                                <div class="d-flex align-items-center gap-2 mb-2">
+                                    <label for="date" class="form-label mb-0">📅 日付</label>
+                                    <button type="button" class="field-help-trigger" data-bs-toggle="tooltip" data-bs-placement="right" title="ASTR を受け取った日です。" aria-label="日付の説明">?</button>
+                                </div>
                                 <input type="date" class="form-control" id="date" required>
                                 <button type="button" class="btn btn-outline-primary btn-sm mt-2 w-100" id="fetchReferenceRateBtn">
                                     📡 その日の参考レートを取得
@@ -60,13 +63,19 @@
 
                             <!-- ASTR量 -->
                             <div class="mb-3">
-                                <label for="astrAmount" class="form-label">🪙 Claim 量（ASTR）</label>
+                                <div class="d-flex align-items-center gap-2 mb-2">
+                                    <label for="astrAmount" class="form-label mb-0">🪙 Claim 量（ASTR）</label>
+                                    <button type="button" class="field-help-trigger" data-bs-toggle="tooltip" data-bs-placement="right" title="受け取った ASTR 数量です。" aria-label="Claim量の説明">?</button>
+                                </div>
                                 <input type="number" class="form-control" id="astrAmount" placeholder="例: 50.12345678" step="0.00000001" min="0" required>
                             </div>
 
                             <!-- ドル円レート -->
                             <div class="mb-3">
-                                <label for="exchangeRate" class="form-label">💱 為替レート（円）</label>
+                                <div class="d-flex align-items-center gap-2 mb-2">
+                                    <label for="exchangeRate" class="form-label mb-0">💱 為替レート（円）</label>
+                                    <button type="button" class="field-help-trigger" data-bs-toggle="tooltip" data-bs-placement="right" title="1 ドルあたりの円価格です。" aria-label="為替レートの説明">?</button>
+                                </div>
                                 <div class="input-group">
                                     <input type="number" class="form-control" id="exchangeRate" placeholder="例: 150.50" step="0.01" min="0" required>
                                     <span class="input-group-text">JPY/USD</span>
@@ -75,7 +84,10 @@
 
                             <!-- ASTRレート（USD） -->
                             <div class="mb-3">
-                                <label for="astrPrice" class="form-label">💲 ASTRレート（USD）</label>
+                                <div class="d-flex align-items-center gap-2 mb-2">
+                                    <label for="astrPrice" class="form-label mb-0">💲 ASTRレート（USD）</label>
+                                    <button type="button" class="field-help-trigger" data-bs-toggle="tooltip" data-bs-placement="right" title="1 ASTR あたりのドル価格です。" aria-label="ASTRレートの説明">?</button>
+                                </div>
                                 <div class="input-group">
                                     <input type="number" class="form-control" id="astrPrice" placeholder="例: 0.1234" step="0.0001" min="0" required>
                                     <span class="input-group-text">USD/ASTR</span>
@@ -84,7 +96,10 @@
 
                             <!-- トランザクションFee -->
                             <div class="mb-3">
-                                <label for="fee" class="form-label">⛽ トランザクションFee</label>
+                                <div class="d-flex align-items-center gap-2 mb-2">
+                                    <label for="fee" class="form-label mb-0">⛽ トランザクションFee</label>
+                                    <button type="button" class="field-help-trigger" data-bs-toggle="tooltip" data-bs-placement="right" title="Claim 時の手数料です。" aria-label="Feeの説明">?</button>
+                                </div>
                                 <input type="number" class="form-control" id="fee" placeholder="例: 0.5" step="0.00000001" min="0">
                             </div>
 
@@ -244,6 +259,60 @@
                 ⚠️ <strong>免責事項：</strong>このツールは参考情報です。確定申告の前に必ず税理士または税務署にご相談ください。
             </p>
         </footer>
+    </div>
+
+    <div class="offcanvas offcanvas-end help-drawer" tabindex="-1" id="helpGuideDrawer" aria-labelledby="helpGuideDrawerLabel">
+        <div class="offcanvas-header border-bottom">
+            <div>
+                <p class="help-drawer-eyebrow mb-1">How to use</p>
+                <h5 class="offcanvas-title mb-0" id="helpGuideDrawerLabel">使い方</h5>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <section class="help-drawer-section">
+                <h6>最短で使う流れ</h6>
+                <ol class="help-step-list">
+                    <li>日付を入力します。</li>
+                    <li>必要なら参考レートを取得します。</li>
+                    <li>Claim 量、レート、Fee を確認します。</li>
+                    <li>「追加」を押して保存します。</li>
+                </ol>
+            </section>
+
+            <section class="help-drawer-section">
+                <h6>入力する項目</h6>
+                <ul class="help-inline-list">
+                    <li><strong>日付</strong>: Claim した日付</li>
+                    <li><strong>Claim 量</strong>: 受け取った ASTR 数量</li>
+                    <li><strong>為替レート</strong>: 1 USD あたりの円価格</li>
+                    <li><strong>ASTR レート</strong>: 1 ASTR あたりの USD 価格</li>
+                    <li><strong>Fee</strong>: Claim 時の手数料</li>
+                </ul>
+            </section>
+
+            <section class="help-drawer-section help-note-box">
+                <h6>参考レートについて</h6>
+                <p class="mb-2">参考レートは補助機能です。取得できない場合や不安がある場合は、手動で入力してください。</p>
+                <p class="mb-0">確認先: <a href="https://www.coingecko.com/ja" target="_blank" rel="noopener noreferrer">CoinGecko</a></p>
+            </section>
+
+            <section class="help-drawer-section">
+                <h6>追加したあと</h6>
+                <ul class="help-inline-list">
+                    <li><strong>集計結果</strong> で合計値を確認できます。</li>
+                    <li><strong>Claim 履歴</strong> で編集や削除ができます。</li>
+                </ul>
+            </section>
+
+            <section class="help-drawer-section">
+                <h6>困ったとき</h6>
+                <ul class="help-inline-list mb-0">
+                    <li>参考レートが取得できないときは、手動で入力してください。</li>
+                    <li>大切なデータは JSON エクスポートで保存してください。</li>
+                </ul>
+            </section>
+        </div>
     </div>
 
     <div class="modal fade" id="reportMetadataModal" tabindex="-1" aria-labelledby="reportMetadataModalLabel" aria-hidden="true">
