@@ -61,6 +61,11 @@ class ASTRRewardCalculator {
             this.handleFetchReferenceRate();
         });
 
+        const helpGuideButton = document.getElementById('helpGuideBtn');
+        if (helpGuideButton) {
+            helpGuideButton.addEventListener('click', () => this.openHelpWindow());
+        }
+
         // エクスポート
         document.getElementById('exportCsvBtn').addEventListener('click', () => this.exportToCSV());
         document.getElementById('exportJsonBtn').addEventListener('click', () => this.exportToJSON());
@@ -221,6 +226,21 @@ class ASTRRewardCalculator {
 
         button.disabled = isLoading;
         button.textContent = isLoading ? '⏳ 参考レート取得中...' : '📡 その日の参考レートを取得';
+    }
+
+    openHelpWindow() {
+        const helpWindow = window.open(
+            'help.html',
+            'astrHelpWindow',
+            'popup=yes,width=960,height=780,resizable=yes,scrollbars=yes'
+        );
+
+        if (!helpWindow) {
+            this.showAlert('ヘルプを開けませんでした。ポップアップを許可して再度お試しください。', 'warning');
+            return;
+        }
+
+        helpWindow.focus();
     }
 
     handleFormSubmit() {

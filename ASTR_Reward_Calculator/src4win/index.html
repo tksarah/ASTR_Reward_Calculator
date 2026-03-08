@@ -26,7 +26,10 @@
                     </h1>
                     <p class="text-center text-muted">Astar dApp Staking リワード計算ツール</p>
                 </div>
-                <div class="theme-toggle">
+                <div class="d-flex align-items-center gap-2 flex-wrap justify-content-end">
+                    <button id="helpGuideBtn" class="btn btn-outline-primary btn-sm" title="使い方を別ウインドウで開く">
+                        ❓ 使い方 / ヘルプ
+                    </button>
                     <button id="themeToggle" class="btn btn-outline-secondary btn-sm" title="テーマ切り替え">
                         🌙 ダーク
                     </button>
@@ -51,7 +54,8 @@
                                 <button type="button" class="btn btn-outline-primary btn-sm mt-2 w-100" id="fetchReferenceRateBtn">
                                     📡 その日の参考レートを取得
                                 </button>
-                                <small class="text-muted d-block mt-2">※ 参考値として ASTR/USD と USD/JPY を自動入力します。必要なら手入力で上書きできます。</small>
+                                    <small class="text-muted d-block mt-2">※ ASTR/USD と USD/JPY の参考レートを自動入力します。取得値は参考情報であり、正確な数値を保証するものではありません。</small>
+                                    <small class="text-muted d-block mt-1">※ 日付や外部サービスの状況により、参考レートを取得できない場合があります。基本的にはご自身で確認したレートを入力してください。ASTR レートの確認先として、<a href="https://www.coingecko.com/ja" target="_blank" rel="noopener noreferrer">CoinGecko 公式サイト</a>もご利用いただけます。</small>
                             </div>
 
                             <!-- ASTR量 -->
